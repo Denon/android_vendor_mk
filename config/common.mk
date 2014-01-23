@@ -111,6 +111,7 @@ PRODUCT_COPY_FILES += \
 # MoKee prebuilts
 PRODUCT_COPY_FILES += \
     vendor/mk/prebuilt/common/app/RootExplorer.apk:system/app/RootExplorer.apk \
+    vendor/mk/prebuilt/common/app/Sweep2Wake.apk:system/app/Sweep2Wake.apk
 
 # Bring in camera effects
 PRODUCT_COPY_FILES +=  \
