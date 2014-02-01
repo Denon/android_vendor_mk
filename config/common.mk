@@ -37,7 +37,11 @@ $(eval TARGET_BOOTANIMATION_NAME := $(shell \
 endef
 $(foreach size,$(bootanimation_sizes), $(call check_and_set_bootanimation,$(size)))
 
+ifeq ($(TARGET_BOOTANIMATION_HALF_RES),true)
+PRODUCT_BOOTANIMATION := vendor/mk/prebuilt/common/bootanimation/halfres/$(TARGET_BOOTANIMATION_NAME).zip
+else
 PRODUCT_BOOTANIMATION := vendor/mk/prebuilt/common/bootanimation/$(TARGET_BOOTANIMATION_NAME).zip
+endif
 endif
 
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
@@ -145,7 +149,6 @@ PRODUCT_PACKAGES += \
     libemoji
 
 # Custom MK packages
-    #MoKeeLauncher \
 
 # MoKee PhoneLoc Database
 PRODUCT_COPY_FILES +=  \
@@ -153,14 +156,15 @@ PRODUCT_COPY_FILES +=  \
 
 PRODUCT_PACKAGES += \
     Launcher3 \
+    MoKeeLauncher \
     DSPManager \
     libcyanogen-dsp \
     libscreenrecorder \
     audio_effects.conf \
     Apollo \
     LockClock \
-    MoKeeScreenRecorder \
-    MoKeeSetupWizard
+    MoKeeHelper \
+    MoKeeScreenRecorder
 
 # MK Hardware Abstraction Framework
 PRODUCT_PACKAGES += \
@@ -169,6 +173,7 @@ PRODUCT_PACKAGES += \
 
 # Extra tools in MK
 PRODUCT_PACKAGES += \
+    libsepol \
     openvpn \
     e2fsck \
     mke2fs \
@@ -212,6 +217,11 @@ PRODUCT_PACKAGES += \
     Superuser \
     su
 
+# Terminal Emulator
+PRODUCT_COPY_FILES +=  \
+    vendor/mk/proprietary/Term.apk:system/app/Term.apk \
+    vendor/mk/proprietary/lib/armeabi/libjackpal-androidterm4.so:system/lib/libjackpal-androidterm4.so
+
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.root_access=1
 else
@@ -224,7 +234,6 @@ endif
 # easy way to extend to add more packages
 -include vendor/extra/product.mk
 
-PRODUCT_PACKAGE_OVERLAYS += vendor/mk/overlay/dictionaries
 PRODUCT_PACKAGE_OVERLAYS += vendor/mk/overlay/common
 
 PRODUCT_VERSION_MAJOR = 44
