@@ -164,6 +164,7 @@ PRODUCT_PACKAGES += \
     Apollo \
     LockClock \
     MoKeeHelper \
+    MoKeeSetupWizard \
     MoKeeScreenRecorder
 
 # MK Hardware Abstraction Framework
