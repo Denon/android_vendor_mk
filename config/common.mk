@@ -104,6 +104,7 @@ PRODUCT_COPY_FILES += \
 # MoKee prebuilts
 PRODUCT_COPY_FILES += \
     vendor/mk/prebuilt/ota/verifier:system/bin/verifier \
+    vendor/mk/prebuilt/common/lib/libbdpush_V1_0.so:system/lib/libbdpush_V1_0.so \
     vendor/mk/prebuilt/common/app/GooglePinyinIME.apk:system/app/GooglePinyinIME.apk \
     vendor/mk/prebuilt/common/lib/libgnustl_shared.so:system/lib/libgnustl_shared.so \
     vendor/mk/prebuilt/common/lib/libhwr.so:system/lib/libhwr.so \
@@ -164,8 +165,8 @@ PRODUCT_PACKAGES += \
     Apollo \
     LockClock \
     MoKeeHelper \
-    MoKeeSetupWizard \
-    MoKeeScreenRecorder
+    MoKeeScreenRecorder \
+    MoKeeSetupWizard
 
 # MK Hardware Abstraction Framework
 PRODUCT_PACKAGES += \
@@ -242,7 +243,7 @@ PRODUCT_VERSION_MINOR = 2
 PRODUCT_VERSION_MAINTENANCE = 0
 
 # Set MK_BUILDTYPE
-ifneq ($(filter mokee mokee-0x02 buildbot,$(shell hostname)),)
+ifneq ($(filter mokee mokee-0x02,$(shell hostname)),)
 
 MK_BUILDTYPE := EXPERIMENTAL
     ifdef MK_NIGHTLY
@@ -284,6 +285,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 -include vendor/cm-priv/keys/keys.mk
 
--include $(WORKSPACE)/hudson/image-auto-bits.mk
+-include $(WORKSPACE)/build-env/image-auto-bits.mk
 
 -include vendor/cyngn/product.mk
