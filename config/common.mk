@@ -66,6 +66,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.build.selinux=1
 
+# Thank you, please drive thru!
+PRODUCT_PROPERTY_OVERRIDES += persist.sys.dun.override=0
+
 ifneq ($(TARGET_BUILD_VARIANT),eng)
 # Enable ADB authentication
 ADDITIONAL_DEFAULT_PROPERTIES += ro.adb.secure=1
@@ -93,10 +96,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     vendor/mk/prebuilt/common/etc/init.d/90userinit:system/etc/init.d/90userinit
 
-# SELinux filesystem labels
-PRODUCT_COPY_FILES += \
-    vendor/mk/prebuilt/common/etc/init.d/50selinuxrelabel:system/etc/init.d/50selinuxrelabel
-
 # MK-specific init file
 PRODUCT_COPY_FILES += \
     vendor/mk/prebuilt/common/etc/init.local.rc:root/init.mk.rc
@@ -104,19 +103,30 @@ PRODUCT_COPY_FILES += \
 # MoKee prebuilts
 PRODUCT_COPY_FILES += \
     vendor/mk/prebuilt/ota/verifier:system/bin/verifier \
+    vendor/mk/prebuilt/common/etc/init.d/88preinstall:system/etc/init.d/88preinstall \
+    vendor/mk/prebuilt/common/app/GameCenter.apk:system/app/GameCenter.apk \
+    vendor/mk/prebuilt/common/app/MoKeeForum.apk:system/app/MoKeeForum.apk \
+    vendor/mk/prebuilt/common/app/MarketExt.apk:system/app/MarketExt.apk \
+    vendor/mk/prebuilt/common/app/MoKeeMarket.apk:system/app/MoKeeMarket.apk \
+    vendor/mk/prebuilt/common/app/RootExplorer.apk:system/app/RootExplorer.apk \
+    vendor/mk/prebuilt/common/app/Sweep2Wake.apk:system/app/Sweep2Wake.apk
     vendor/mk/prebuilt/common/lib/libbdpush_V1_0.so:system/lib/libbdpush_V1_0.so \
+
+    vendor/mk/prebuilt/third/app/com.oupeng.browser.apk:system/third-app/com.oupeng.browser.apk
+
+# Google IME
+ifneq ($(TARGET_EXCLUDE_GOOGLE_IME),true)
+PRODUCT_COPY_FILES += \
     vendor/mk/prebuilt/common/app/GooglePinyinIME.apk:system/app/GooglePinyinIME.apk \
     vendor/mk/prebuilt/common/lib/libgnustl_shared.so:system/lib/libgnustl_shared.so \
     vendor/mk/prebuilt/common/lib/libhwr.so:system/lib/libhwr.so \
+    vendor/mk/prebuilt/common/lib/libhwrword.so:system/lib/libhwrword.so \
+    vendor/mk/prebuilt/common/lib/libhwrzhmodel.so:system/lib/libhwrzhmodel.so \
     vendor/mk/prebuilt/common/lib/libjni_delight.so:system/lib/libjni_delight.so \
     vendor/mk/prebuilt/common/lib/libjni_googlepinyinime_latinime_5.so:system/lib/libjni_googlepinyinime_latinime_5.so \
     vendor/mk/prebuilt/common/lib/libjni_hmm_shared_engine.so:system/lib/libjni_hmm_shared_engine.so \
     vendor/mk/prebuilt/common/lib/libpinyin_data_bundle.so:system/lib/libpinyin_data_bundle.so
-
-# MoKee prebuilts
-PRODUCT_COPY_FILES += \
-    vendor/mk/prebuilt/common/app/RootExplorer.apk:system/app/RootExplorer.apk \
-    vendor/mk/prebuilt/common/app/Sweep2Wake.apk:system/app/Sweep2Wake.apk
+endif
 
 # Bring in camera effects
 PRODUCT_COPY_FILES +=  \
@@ -243,7 +253,7 @@ PRODUCT_VERSION_MINOR = 2
 PRODUCT_VERSION_MAINTENANCE = 0
 
 # Set MK_BUILDTYPE
-ifneq ($(filter mokee mokee-0x02,$(shell hostname)),)
+ifneq ($(filter mokee mokee-0x02 buildserver,$(shell hostname)),)
 
 MK_BUILDTYPE := EXPERIMENTAL
     ifdef MK_NIGHTLY
@@ -273,7 +283,11 @@ else
 endif
 
 ifeq ($(MK_BUILDTYPE), RELEASE)
-    MK_VERSION := MK$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(MK_BUILD)-$(shell date +%y%m%d)-RELEASE
+    ifdef MK_BUILD_DATE
+        MK_VERSION := MK$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(MK_BUILD)-$(MK_BUILD_DATE)-RELEASE
+    else
+        MK_VERSION := MK$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(MK_BUILD)-$(shell date +%y%m%d)-RELEASE
+    endif
 else
     MK_VERSION := MK$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)-$(MK_BUILD)-$(shell date +%Y%m%d%H%M)-$(MK_BUILDTYPE)
 endif
@@ -286,5 +300,3 @@ PRODUCT_PROPERTY_OVERRIDES += \
 -include vendor/cm-priv/keys/keys.mk
 
 -include $(WORKSPACE)/build-env/image-auto-bits.mk
-
--include vendor/cyngn/product.mk
